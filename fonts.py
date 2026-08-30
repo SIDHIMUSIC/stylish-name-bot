@@ -3,18 +3,27 @@ CATEGORIES = ("all", "cute", "royal", "dark", "gaming", "aesthetic")
 FRAMES = {
     "none": ("", ""),
     "royal": ("꧁྄ ", " ྄꧂"),
-    "star": ("✦ ", " ✦"),
-    "heart": ("♡ ", " ♡"),
-    "crown": ("👑 ", " 👑"),
-    "game": ("▸ ", " ◂"),
-    "cute": ("✧･", "･✧"),
-    "dark": ("☠ ", " ☠"),
-    "brack": ("【", "】"),
+    "star": ("* ", " *"),
+    "heart": ("<3 ", " <3"),
+    "crown": ("~ ", " ~"),
+    "game": ("> ", " <"),
+    "cute": (". ", " ."),
+    "dark": ("x ", " x"),
+    "brack": ("[", "]"),
 }
+
+# nicer unicode frames
+FRAMES["star"] = ("\u2726 ", " \u2726")
+FRAMES["heart"] = ("\u2661 ", " \u2661")
+FRAMES["crown"] = ("\U0001F451 ", " \U0001F451")
+FRAMES["game"] = ("\u25b8 ", " \u25c2")
+FRAMES["cute"] = ("\u2727\uff65", "\uff65\u2727")
+FRAMES["dark"] = ("\u2620 ", " \u2620")
+FRAMES["brack"] = ("\u3010", "\u3011")
 
 CAT_STYLES = {
     "cute": ["script", "smallcaps", "circled", "italic"],
-    "royal": ["boldserif", "double", "script", "smallcaps"],
+    "royal": ["bold", "double", "script", "smallcaps"],
     "dark": ["bold", "mono", "fullwidth"],
     "gaming": ["mono", "fullwidth", "circled", "bold"],
     "aesthetic": ["italic", "script", "smallcaps", "double"],
@@ -22,11 +31,11 @@ CAT_STYLES = {
 }
 
 SMALL = {
-    "a": "ᴀ", "b": "ʙ", "c": "ᴄ", "d": "ᴅ", "e": "ᴇ", "f": "ꜰ",
-    "g": "ɢ", "h": "ʜ", "i": "ɪ", "j": "ᴊ", "k": "ᴋ", "l": "ʟ",
-    "m": "ᴍ", "n": "ɴ", "o": "ᴏ", "p": "ᴘ", "q": "ǫ", "r": "ʀ",
-    "s": "ѕ", "t": "ᴛ", "u": "ᴜ", "v": "ᴠ", "w": "ᴡ", "x": "ʏ",
-    "y": "ʏ", "z": "ᴢ",
+    "a": "\u1d00", "b": "\u0299", "c": "\u1d04", "d": "\u1d05", "e": "\u1d07", "f": "\ua730",
+    "g": "\u0262", "h": "\u029c", "i": "\u026a", "j": "\u1d0a", "k": "\u1d0b", "l": "\u029f",
+    "m": "\u1d0d", "n": "\u0274", "o": "\u1d0f", "p": "\u1d18", "q": "\u01eb", "r": "\u0280",
+    "s": "\u0455", "t": "\u1d1b", "u": "\u1d1c", "v": "\u1d20", "w": "\u1d21", "x": "\u028f",
+    "y": "\u028f", "z": "\u1d22",
 }
 CIRCLED = {
     **{chr(97 + i): chr(0x24D0 + i) for i in range(26)},
@@ -56,7 +65,6 @@ ENGINES = {
     "italic": _math(0x1D44E, 0x1D434),
     "bolditalic": _math(0x1D482, 0x1D468),
     "script": _math(0x1D4B6, 0x1D49C),
-    "boldserif": _math(0x1D41A, 0x1D400, 0x1D7CE),
     "double": _math(0x1D552, 0x1D538, 0x1D7D8),
     "mono": _math(0x1D68A, 0x1D670, 0x1D7F6),
     "smallcaps": lambda t: "".join(SMALL.get(ch.lower(), ch) if ch.isalpha() else ch for ch in t),
