@@ -1,27 +1,19 @@
 # Stylish Name Bot
 
-Telegram stylish name generator — Unicode fonts, frames, categories, pagination, inline mode.
+Telegram stylish name generator like @stylishnamegenrator_bot
 
-Like `@stylishnamegenrator_bot` flow:
+- Send a name or /font Harry
+- Categories: cute royal dark gaming aesthetic
+- Frames: star heart crown royal game
+- Pagination + tap to copy
+- Inline mode: @YourBot Harry
 
-1. Send a name
-2. Pick category (cute / royal / dark / gaming / aesthetic)
-3. Pick frame (royal / star / heart / crown / game)
-4. Tap number → copy that style
-5. Any chat: `@YourBot Harry`
-
-## Commands
-- `/start`
-- `/font Harry`
-- just send text
-
-## Run
 ```bash
 pip install -r requirements.txt
 export TELEGRAM_BOT_TOKEN=xxx
 python bot.py
 ```
 
-Enable inline mode in @BotFather → Bot Settings → Inline Mode → On.
+BotFather: enable Inline Mode.
 
-Repo: https://github.com/SIDHIMUSIC/stylish-name-bot
+https://github.com/SIDHIMUSIC/stylish-name-bot
