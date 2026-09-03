@@ -1,4 +1,5 @@
 import os
+import html
 import asyncio
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
@@ -18,6 +19,16 @@ PER_MSG = 8
 OWNER_URL = os.getenv("OWNER_URL", "https://t.me/SANATANI_BACCHA")
 SUPPORT_URL = os.getenv("SUPPORT_URL", "https://t.me/HARRYASHU")
 STYLE_URL = os.getenv("STYLE_URL", "https://t.me/TG_BIO_STYLE")
+
+E1 = "5426978447383615815"
+E2 = "6026367225466720832"
+E3 = "6118209143972040877"
+E4 = "5291873529464122510"
+E5 = "5357315181649076022"
+
+
+def pe(eid: str, fallback: str = "\u2728") -> str:
+    return f'<tg-emoji emoji-id="{eid}">{fallback}</tg-emoji>'
 
 
 def build_all(name):
@@ -65,28 +76,27 @@ def start_kb():
     return InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("\U0001f48c Support", url=SUPPORT_URL),
-                InlineKeyboardButton("\U0001f451 Owner", url=OWNER_URL),
+                InlineKeyboardButton("Support", url=SUPPORT_URL),
+                InlineKeyboardButton("Owner", url=OWNER_URL),
             ],
-            [InlineKeyboardButton("\u2728 Bio Style", url=STYLE_URL)],
+            [InlineKeyboardButton("Bio Style", url=STYLE_URL)],
         ]
     )
 
 
 def start_text(who: str) -> str:
+    a, b, c, d, e = pe(E1), pe(E2), pe(E3), pe(E4), pe(E5)
+    safe = html.escape(who)
     return (
-        "\u2728\u2728\u2728  \U0001d407\U0001d404\U0001d418 I AM PREMIUM NAME MAKER BOT  \u2705\u2705\u2705\n"
-        "\U0001f48e \U0001f451 \U0001f525 \u26a1 \U0001f48c \U0001f496 \U0001f31f \U0001f680\n\n"
-        f"\U0001f44b Welcome, {who}! \U0001f49e\n\n"
-        "\U0001f48c Send me your name\n"
-        "To make it stylish \u2728\n\n"
-        "\u26a1 Generate 3500+ Premium Styles\n"
-        "\U0001f3ad Fancy Unicode & VIP Underlines\n"
-        "\U0001f48e Aesthetic Emoji Decorations\n"
-        "\U0001f680 Fast & Free \u2014 click below to start\n\n"
-        "\U0001f451 Owner \u2014 @SANATANI_BACCHA\n"
-        "\U0001f4ac Support \u2014 @HARRYASHU\n"
-        "\u2728 Style \u2014 @TG_BIO_STYLE"
+        f"{a}{b}{c}\n"
+        f"<b>\U0001d407\U0001d404\U0001d418 I AM PREMIUM NAME MAKER BOT</b> {d}{e}\n\n"
+        f"{a} Welcome, <b>{safe}</b> {b}\n\n"
+        f"{c} <i>Send me your name</i>\n"
+        f"<i>To make it stylish</i> {d}\n\n"
+        f"{e} Generate <b>3500+</b> Premium Styles\n"
+        f"{a} Fancy Unicode &amp; VIP Underlines\n"
+        f"{b} Aesthetic Emoji Decorations\n"
+        f"{c} Fast &amp; Free \u2014 tap a button below"
     )
 
 
@@ -116,6 +126,7 @@ async def start(update, context):
     await update.message.reply_text(
         start_text(who),
         reply_markup=start_kb(),
+        parse_mode="HTML",
     )
 
 
