@@ -1,12 +1,13 @@
 # Stylish Name Bot
 
-Telegram stylish name generator like @stylishnamegenrator_bot
+Telegram + web stylish name generator.
 
-- Send a name or /font Harry
-- Categories: cute royal dark gaming aesthetic
-- Frames: star heart crown royal game
-- Pagination + tap to copy
-- Inline mode: @YourBot Harry
+- 30+ Unicode fonts (bold, script, fraktur, circled, CJK, vaporwave…)
+- Frames: royal `ൽ༒`, star, crown, game `×͜×`, flower, bolt
+- Categories: cute royal dark gaming aesthetic nature
+- Pagination, tap-to-copy, `/random` mix
+- Inline mode: `@YourBot Harry`
+- `index.html` — dark neon web generator (GitHub Pages)
 
 ```bash
 pip install -r requirements.txt
@@ -15,5 +16,7 @@ python bot.py
 ```
 
 BotFather: enable Inline Mode.
+
+Web page: open `index.html` or host on GitHub Pages.
 
 https://github.com/SIDHIMUSIC/stylish-name-bot
