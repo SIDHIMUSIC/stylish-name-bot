@@ -15,16 +15,22 @@ TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 BATCH = 12
 PER_MSG = 8
 
+OWNER_URL = os.getenv("OWNER_URL", "https://t.me/SANATANI_BACHA")
+SUPPORT_URL = os.getenv("SUPPORT_URL", "https://t.me/SIDHI_SUPPORT")
+CHANNEL_URL = os.getenv("CHANNEL_URL", "https://t.me/SIDHI_MUSIC")
+
 
 def build_all(name):
     name = (name or "").strip()[:24] or "Name"
     items = list(base_build(name))
     seen = set(items)
+
     def add(x):
         x = " ".join(str(x).split()) if "\n" not in str(x) else str(x)
         if x and x not in seen:
             seen.add(x)
             items.append(x)
+
     for extra in lookalike_fonts(name):
         add(extra)
         add(f"\u2605 {extra} \u2605")
@@ -55,6 +61,35 @@ def continue_kb():
     )
 
 
+def start_kb():
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("\U0001F4AC Support", url=SUPPORT_URL),
+                InlineKeyboardButton("\U0001F451 Owner", url=OWNER_URL),
+            ],
+            [InlineKeyboardButton("\U0001F3B5 Channel", url=CHANNEL_URL)],
+        ]
+    )
+
+
+START_TEXT = (
+    "\u2728\u2728 \U0001d407\U0001d404\U0001d418  "
+    "\U0001d408  \U0001d400\U0001d40c  "
+    "\U0001d40f\U0001d411\U0001d404\U0001d40c\U0001d408\U0001d414\U0001d40c  "
+    "\U0001d40d\U0001d400\U0001d40c\U0001d404  "
+    "\U0001d40c\U0001d400\U0001d40a\U0001d404\U0001d411  "
+    "\U0001d401\U0001d40e\U0001d413  \u2705\u2705\u2705\n\n"
+    "\U0001f44b Welcome, {who}! \U0001f496\n\n"
+    "\U0001f48c \u1d1b\u1d0f \u1d0c\u1d00\u1d07\u1d07 \u026a\u1d1b \u1d1b\u1d1b\u028f\u029f\u026a\u1d1b\u1d04\u029c\n"
+    "Send me your name to make it stylish \u2728\n\n"
+    "\u26a1 Generate 3500+ Premium Styles\n"
+    "\U0001f3ad Fancy Unicode & VIP Underlines\n"
+    "\U0001f48e Aesthetic Emoji Decorations\n"
+    "\U0001f680 Fast & Free \u2014 tap buttons below"
+)
+
+
 async def send_batch(target, name, offset):
     rows = build_all(name)
     chunk = rows[offset : offset + BATCH]
@@ -76,9 +111,11 @@ async def send_batch(target, name, offset):
 
 
 async def start(update, context):
+    user = update.effective_user
+    who = (user.first_name if user else "Dear")[:24]
     await update.message.reply_text(
-        "Naam bhejo. Stylish nicks aa jayenge.\n"
-        "/font Naam  \u00b7  /style Naam"
+        START_TEXT.format(who=who),
+        reply_markup=start_kb(),
     )
 
 
