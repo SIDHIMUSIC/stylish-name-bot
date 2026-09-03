@@ -11,7 +11,7 @@ from telegram.ext import (
 from nick_styles import build_all
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-BATCH = 12
+BATCH = 15
 
 
 def session(context):
@@ -36,9 +36,13 @@ async def send_batch(target, name, offset):
     new_offset = offset + len(chunk)
     more = new_offset < len(rows)
     if more:
-        await target.reply_text(" ", reply_markup=continue_kb())
+        left = len(rows) - new_offset
+        await target.reply_text(
+            f"▶ CONTINUE  ·  {left} more",
+            reply_markup=continue_kb(),
+        )
     else:
-        await target.reply_text("That's all. Naya naam bhejo.")
+        await target.reply_text("Khatam. Naya naam bhejo.")
     return new_offset
 
 
