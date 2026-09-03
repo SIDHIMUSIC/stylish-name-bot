@@ -8,11 +8,38 @@ from telegram.ext import (
     CallbackQueryHandler,
     filters,
 )
-from nick_styles import build_all
+from nick_styles import build_all as base_build
+from extra_styles import lookalike_fonts, EXTRA_WRAPS, PREFIXES, SUFFIXES
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 BATCH = 12
 PER_MSG = 8
+
+
+def build_all(name):
+    name = (name or "").strip()[:24] or "Name"
+    items = list(base_build(name))
+    seen = set(items)
+    def add(x):
+        x = " ".join(str(x).split()) if "\n" not in str(x) else str(x)
+        if x and x not in seen:
+            seen.add(x)
+            items.append(x)
+    for extra in lookalike_fonts(name):
+        add(extra)
+        add(f"\u2605 {extra} \u2605")
+        add(f"\ua9c1 {extra} \ua9c2")
+        add(f"\U000132a9 {extra} \U000132aa")
+    core = items[:8] or [name]
+    for wrap in EXTRA_WRAPS:
+        if "{n}" not in wrap:
+            continue
+        for inner in core[:4]:
+            add(wrap.replace("{n}", inner))
+    for i, pre in enumerate(PREFIXES):
+        suf = SUFFIXES[i % len(SUFFIXES)]
+        add(f"{pre} {core[i % len(core)]} {suf}")
+    return items
 
 
 def session(context):
