@@ -15,9 +15,9 @@ TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 BATCH = 12
 PER_MSG = 8
 
-OWNER_URL = os.getenv("OWNER_URL", "https://t.me/SANATANI_BACHA")
-SUPPORT_URL = os.getenv("SUPPORT_URL", "https://t.me/SIDHI_SUPPORT")
-CHANNEL_URL = os.getenv("CHANNEL_URL", "https://t.me/SIDHI_MUSIC")
+OWNER_URL = os.getenv("OWNER_URL", "https://t.me/SANATANI_BACCHA")
+SUPPORT_URL = os.getenv("SUPPORT_URL", "https://t.me/HARRYASHU")
+STYLE_URL = os.getenv("STYLE_URL", "https://t.me/TG_BIO_STYLE")
 
 
 def build_all(name):
@@ -65,29 +65,29 @@ def start_kb():
     return InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("\U0001F4AC Support", url=SUPPORT_URL),
-                InlineKeyboardButton("\U0001F451 Owner", url=OWNER_URL),
+                InlineKeyboardButton("\U0001f48c Support", url=SUPPORT_URL),
+                InlineKeyboardButton("\U0001f451 Owner", url=OWNER_URL),
             ],
-            [InlineKeyboardButton("\U0001F3B5 Channel", url=CHANNEL_URL)],
+            [InlineKeyboardButton("\u2728 Bio Style", url=STYLE_URL)],
         ]
     )
 
 
-START_TEXT = (
-    "\u2728\u2728 \U0001d407\U0001d404\U0001d418  "
-    "\U0001d408  \U0001d400\U0001d40c  "
-    "\U0001d40f\U0001d411\U0001d404\U0001d40c\U0001d408\U0001d414\U0001d40c  "
-    "\U0001d40d\U0001d400\U0001d40c\U0001d404  "
-    "\U0001d40c\U0001d400\U0001d40a\U0001d404\U0001d411  "
-    "\U0001d401\U0001d40e\U0001d413  \u2705\u2705\u2705\n\n"
-    "\U0001f44b Welcome, {who}! \U0001f496\n\n"
-    "\U0001f48c \u1d1b\u1d0f \u1d0c\u1d00\u1d07\u1d07 \u026a\u1d1b \u1d1b\u1d1b\u028f\u029f\u026a\u1d1b\u1d04\u029c\n"
-    "Send me your name to make it stylish \u2728\n\n"
-    "\u26a1 Generate 3500+ Premium Styles\n"
-    "\U0001f3ad Fancy Unicode & VIP Underlines\n"
-    "\U0001f48e Aesthetic Emoji Decorations\n"
-    "\U0001f680 Fast & Free \u2014 tap buttons below"
-)
+def start_text(who: str) -> str:
+    return (
+        "\u2728\u2728\u2728  \U0001d407\U0001d404\U0001d418 I AM PREMIUM NAME MAKER BOT  \u2705\u2705\u2705\n"
+        "\U0001f48e \U0001f451 \U0001f525 \u26a1 \U0001f48c \U0001f496 \U0001f31f \U0001f680\n\n"
+        f"\U0001f44b Welcome, {who}! \U0001f49e\n\n"
+        "\U0001f48c Send me your name\n"
+        "To make it stylish \u2728\n\n"
+        "\u26a1 Generate 3500+ Premium Styles\n"
+        "\U0001f3ad Fancy Unicode & VIP Underlines\n"
+        "\U0001f48e Aesthetic Emoji Decorations\n"
+        "\U0001f680 Fast & Free \u2014 click below to start\n\n"
+        "\U0001f451 Owner \u2014 @SANATANI_BACCHA\n"
+        "\U0001f4ac Support \u2014 @HARRYASHU\n"
+        "\u2728 Style \u2014 @TG_BIO_STYLE"
+    )
 
 
 async def send_batch(target, name, offset):
@@ -114,7 +114,7 @@ async def start(update, context):
     user = update.effective_user
     who = (user.first_name if user else "Dear")[:24]
     await update.message.reply_text(
-        START_TEXT.format(who=who),
+        start_text(who),
         reply_markup=start_kb(),
     )
 
