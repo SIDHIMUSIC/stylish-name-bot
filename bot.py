@@ -11,7 +11,8 @@ from telegram.ext import (
 from nick_styles import build_all
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-BATCH = 15
+BATCH = 12
+PER_MSG = 8
 
 
 def session(context):
@@ -30,9 +31,10 @@ def continue_kb():
 async def send_batch(target, name, offset):
     rows = build_all(name)
     chunk = rows[offset : offset + BATCH]
-    for nick in chunk:
-        await target.reply_text(nick)
-        await asyncio.sleep(0.04)
+    for i in range(0, len(chunk), PER_MSG):
+        piece = chunk[i : i + PER_MSG]
+        await target.reply_text("\n\n".join(piece))
+        await asyncio.sleep(0.05)
     new_offset = offset + len(chunk)
     more = new_offset < len(rows)
     if more:

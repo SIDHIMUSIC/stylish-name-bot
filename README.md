@@ -2,11 +2,9 @@
 
 Telegram stylish name generator.
 
-- 30+ Unicode fonts (bold, sans, script, fraktur, circled, fullwidth, small caps)
-- Combining marks: underline, double-line, strike, overline, Meetei stack
-- Frames: royal, heart wings, crown, game, box banner
-- Ready combos from the fancy Unicode pack
-- Pagination (CONTINUE) with total count
+Unicode sites (fsymbols, gypu, tell.wtf, fancy generators) do not have 15,000 unique alphabets. They mix ~80-150 letter fonts with frames and combining marks.
+
+This bot now includes those font families + lookalikes + site-style frames. Output is a large unique catalog with CONTINUE pagination. Several nicks are packed per message so the list stays usable.
 
 ```bash
 pip install -r requirements.txt
