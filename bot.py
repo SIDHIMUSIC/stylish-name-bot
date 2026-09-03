@@ -23,13 +23,13 @@ def session(context):
 
 def continue_kb():
     return InlineKeyboardMarkup(
-        [[InlineKeyboardButton("▶ CONTINUE", callback_data="more")]]
+        [[InlineKeyboardButton("\u25b6 CONTINUE", callback_data="more")]]
     )
 
 
 async def send_batch(target, name, offset):
     rows = build_all(name)
-    chunk = rows[offset:offset + BATCH]
+    chunk = rows[offset : offset + BATCH]
     for nick in chunk:
         await target.reply_text(nick)
         await asyncio.sleep(0.04)
@@ -38,7 +38,7 @@ async def send_batch(target, name, offset):
     if more:
         left = len(rows) - new_offset
         await target.reply_text(
-            f"▶ CONTINUE  ·  {left} more",
+            f"\u25b6 CONTINUE  \u00b7  {left} more  \u00b7  {len(rows)} total",
             reply_markup=continue_kb(),
         )
     else:
@@ -47,7 +47,10 @@ async def send_batch(target, name, offset):
 
 
 async def start(update, context):
-    await update.message.reply_text("Naam bhejo. Stylish nicks aa jayenge.")
+    await update.message.reply_text(
+        "Naam bhejo. Stylish nicks aa jayenge.\n"
+        "/font Naam  \u00b7  /style Naam"
+    )
 
 
 async def on_name(update, context):
