@@ -1,13 +1,13 @@
 # Stylish Name Bot
 
-Telegram stylish name generator — Unicode fonts, frames, categories, pagination, inline mode.
+Telegram stylish name generator — Unicode fonts, frames, categories, pagination.
 
 ## Behaviour
 
 - **Private chat:** send any name, bot replies with styles.
 - **Groups:** plain text is ignored. Use `/style Harry` or `/font Harry`.
-- **Inline:** `@yourbot Harry`
 - **Hourly promo** in groups where the bot is added (premium custom emoji).
+- No inline mode. No third-party style / AI API.
 
 ## Setup
 
@@ -18,7 +18,7 @@ cp .env.example .env
 python bot.py
 ```
 
-BotFather: enable **Inline mode**. Privacy mode can stay ON because groups only use commands.
+BotFather: inline mode OFF. Privacy mode ON is fine because groups only use commands.
 
 ## Env
 
