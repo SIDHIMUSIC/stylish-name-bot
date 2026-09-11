@@ -29,6 +29,7 @@ L, R = "\U000131A9", "\U000131AA"
 FONTS = ["bold", "italic", "script", "boldscript", "smallcaps", "mono", "double", "fraktur"]
 MARKS = ["", "★", "✦", "✨", "⃝"]
 ORNAMENTS = ["", "♡", "✧", "❀", "⚡", "🌸", "🌿", "🦋", "🤍", "👑"]
+EMOJI_DECOR = ["🔥", "💎", "👑", "✨", "💖", "🌸", "🦋", "🤍", "🌙", "⚡", "🌹", "🎀"]
 PREFIXES = ["", L, "◄⸻", "✯", "⸻", "꧁", "❥", "『", "【", "❖", "➳", "♛", "👑", "🔥"] + list(XPRE)
 SUFFIXES = ["", R, "⸻►", "✯", "⸻", "꧂", "❥", "』", "】", "🌸", "🤍", "🦋", "👑", "🔥"] + list(XSUF)
 PREMIUM_WRAPS = [L + " {n} " + R, L + "{n}" + R, "◄⸻ {n} ⸻►", "✯ ⸻꯭ {n} ⸻꯭ ✯", "꧁ {n} ꧂", "『 {n} 』", "【 {n} 】", "❖ {n} ❖", "➳ {n} ➳", "♛ {n} ♛", "👑 {n} 👑", "💎 {n} 💎", "🔥 {n} 🔥"]
@@ -97,8 +98,30 @@ def compose(name: str, parts: dict) -> str:
     if parts.get("spacing") == "wide": core = " ".join(core)
     if parts.get("underline"): core = strike(core)
     if parts.get("crown"): core = f"👑 {core} 👑"
-    chunks = [parts.get("prefix", ""), parts.get("title", ""), core, parts.get("suffix", ""), parts.get("ornament", ""), parts.get("marks", "")]
+    prefix = parts.get("prefix", "") if parts.get("prefix_on", True) else ""
+    suffix = parts.get("suffix", "") if parts.get("suffix_on", True) else ""
+    emoji = parts.get("emoji_char", "✨") if parts.get("emoji") else ""
+    chunks = [prefix, parts.get("title", ""), emoji, core, suffix, parts.get("ornament", ""), parts.get("marks", "")]
     return " ".join(str(x).strip() for x in chunks if str(x).strip()).strip()
+
+def live_designs(name: str, parts: dict) -> list[str]:
+    """Build 15 deterministic live designs from the current ON/OFF controls."""
+    raw = (name or "Name").strip()[:24] or "Name"
+    fonts = [parts.get("font") or "bold", "boldscript", "script", "double", "mono", "fraktur", "italic", "smallcaps"]
+    prefixes = PREFIXES[1:] or [""]
+    suffixes = SUFFIXES[1:] or [""]
+    out = []
+    for i in range(15):
+        p = dict(parts)
+        p["font"] = fonts[i % len(fonts)]
+        p["prefix"] = prefixes[i % len(prefixes)] if parts.get("prefix_on", True) else ""
+        p["suffix"] = suffixes[(i + 2) % len(suffixes)] if parts.get("suffix_on", True) else ""
+        p["emoji_char"] = EMOJI_DECOR[i % len(EMOJI_DECOR)]
+        if i % 3 == 1: p["underline"] = True
+        if i % 5 == 4: p["marks"] = "✦"
+        if i % 7 == 6: p["ornament"] = "♡"
+        out.append(compose(raw, p))
+    return _unique(out, 15)
 
 def bios(name: str) -> list[str]:
     n = (name or "Me").strip()[:28] or "Me"
