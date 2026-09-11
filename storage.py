@@ -10,11 +10,14 @@ DATA_PATH = Path(os.getenv("DATA_PATH", "data/chats.json"))
 
 def _load() -> dict:
     if not DATA_PATH.exists():
-        return {"groups": []}
+        return {"groups": [], "fsub": True}
     try:
-        return json.loads(DATA_PATH.read_text(encoding="utf-8"))
+        data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
-        return {"groups": []}
+        return {"groups": [], "fsub": True}
+    data.setdefault("groups", [])
+    data.setdefault("fsub", True)
+    return data
 
 
 def _save(data: dict) -> None:
@@ -40,3 +43,13 @@ def remove_group(chat_id: int) -> None:
 
 def list_groups() -> list[int]:
     return list(_load().get("groups", []))
+
+
+def fsub_enabled() -> bool:
+    return bool(_load().get("fsub", True))
+
+
+def set_fsub(on: bool) -> None:
+    data = _load()
+    data["fsub"] = bool(on)
+    _save(data)
