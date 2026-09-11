@@ -13,7 +13,7 @@ PAGE_SIZE = 10
 CATS = (
     ("premium", "👑 PREMIUM DESIGN (156 Styles)"),
     ("aesthetic", "✨ Aesthetic Art Styles (107 Styles)"),
-    ("live", "🎬 Live Design (15 Styles)"),
+    ("live", "🎬 LIVE DESIGN • Prefix/Suffix/Emoji/Underline"),
     ("hindi", "🇮🇳 Hindi Live Design (15 Styles)"),
 )
 
@@ -21,7 +21,15 @@ CATS = (
 def cat_kb():
     rows = []
     for i, (key, label) in enumerate(CATS):
-        rows.append([btn(label, callback_data=f"cat|{key}", style="primary" if i % 2 == 0 else "success", icon=EMOJI_IDS[i])])
+        callback = "live|open" if key == "live" else f"cat|{key}"
+        rows.append([
+            btn(
+                label,
+                callback_data=callback,
+                style="primary" if i % 2 == 0 else "success",
+                icon=EMOJI_IDS[i],
+            )
+        ])
     rows.append([
         btn("New Name", callback_data="menu|name", style="success", icon=EMOJI_IDS[1]),
         btn("Main Menu", callback_data="menu|home", style="danger", icon=EMOJI_IDS[2]),
@@ -38,7 +46,10 @@ def styles_kb(rows, page):
         label = f"{i + 1}. {item}"
         if len(label) > 64:
             label = label[:61] + "..."
-        kwargs = {"style": "primary" if i % 2 == 0 else "success", "icon": EMOJI_IDS[i % len(EMOJI_IDS)]}
+        kwargs = {
+            "style": "primary" if i % 2 == 0 else "success",
+            "icon": EMOJI_IDS[i % len(EMOJI_IDS)],
+        }
         if CopyTextButton is not None:
             kwargs["copy_text"] = CopyTextButton(text=item)
         else:
