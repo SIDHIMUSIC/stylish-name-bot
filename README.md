@@ -2,6 +2,8 @@
 
 Telegram stylish name generator — Unicode fonts, frames, categories, pagination.
 
+Owner: [@SANATANI_BACCHA](https://t.me/SANATANI_BACCHA)
+
 ## Behaviour
 
 - **Private chat:** send any name, bot replies with styles.
@@ -24,9 +26,11 @@ BotFather: inline mode OFF. Privacy mode ON is fine because groups only use comm
 
 ```
 TELEGRAM_BOT_TOKEN=
-OWNER_URL=https://t.me/SANATANI_BACHA
+OWNER_URL=https://t.me/SANATANI_BACCHA
 SUPPORT_URL=https://t.me/HARRYASHU
 STYLE_URL=https://t.me/TG_BIO_STYLE
+NAME_PACK_URL=https://t.me/NAME_BOTGEN
+FORCE_CHANNEL=TG_BIO_STYLE
 PROMO_HOURS=1
 DATA_PATH=data/chats.json
 ```
