@@ -1,4 +1,4 @@
-"""Local premium wraps. Imports nick_styles unicode pack. No paid API."""
+"""Local premium wraps + channel-style frames for the editor."""
 from __future__ import annotations
 
 try:
@@ -34,10 +34,17 @@ try:
 except ImportError:
     pack_build = None
 
+try:
+    from extra_styles import EXTRA_WRAPS, PREFIXES as XPRE, SUFFIXES as XSUF, lookalike_fonts
+except ImportError:
+    EXTRA_WRAPS, XPRE, XSUF = [], [], []
+    def lookalike_fonts(name):
+        return []
+
 MEITEI = "\uA9BF"
 CIRCLE = "\u20DD"
-L = "\U000131a9"  # 𓆩
-R = "\U000131aa"  # 𓆪
+L = "\U000131a9"
+R = "\U000131aa"
 
 def apply_font(name: str, font: str) -> str:
     if font in ENGINES:
@@ -56,47 +63,42 @@ PREMIUM_WRAPS = [
     L + " {n} " + R,
     L + "{n}" + R,
     L + " {n} \U0001F33E " + R,
+    "\u25c4\u23e4 {n} \u23e4\u25ba",
+    "\u272f \u23af\uabed {n} \u23af\uabed \u272f",
+    "\ua9c1 {n} \ua9c2",
     "\u300e {n} \u300f",
+    "\u3010 {n} \u3011",
     "\u2756 {n} \u2756",
     "\u27bb {n} \u27bb",
-    "\U00013209 {n} \U00013209",
     "\u265b {n} \u265b",
-    "\u2629{n}\U0001F525",
-    "\u3010 {n} \u3011",
-    "\u2726 {n} \u2726",
     "\U0001F451 {n} \U0001F451",
     "\U0001F48E {n} \U0001F48E",
     "\U0001F525 {n} \U0001F525",
-    "\U0001F338 {n} \U0001F338",
-    "\u256d\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u256e\n       {n}\n\u2570\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u256f",
 ]
 AESTHETIC_WRAPS = [
     L + " {n} " + R,
-    L + " {n} \U0001F33E " + R,
+    "\u2765 {n} \u2765",
     "\u300e {n} \u300f",
-    "\u2756 {n} \u2756",
-    "\u27bb {n} \u27bb",
     "\u2661 {n} \u2661",
     "\U0001F380 {n} \U0001F380",
-    "\U0001F319 {n} \u2728",
-    "\u273f {n} \u273f",
+    "\U0001F98B {n} \U0001F98B",
+    "\U0001F90D {n} \U0001F90D",
     "\u2740 {n} \u2740",
+    "\U0001FAB7 {n} \U0001FAB7",
 ]
 LIVE_WRAPS = [
-    L + "{n}" + R, "\u300e{n}\u300f", "\u3010{n}\u3011", "\u2726{n}\u2726",
-    "\u26a1{n}\u26a1", "\U0001F525{n}\U0001F525", "\u265b{n}\u265b",
-    "\u27bb{n}\u27bb", "\u2756{n}\u2756", "\u2605{n}\u2605",
+    L + "{n}" + R, "\u300e{n}\u300f", "\u3010{n}\u3011",
+    "\u2726{n}\u2726", "\u26a1{n}\u26a1", "\U0001F525{n}\U0001F525",
 ]
 HINDI_WRAPS = [
     L + " {n} " + R,
-    "\u091c\u092f {n} \U0001F6A9", "\u0950 {n} \u0950", "\U0001F64F {n} \U0001F64F",
-    "\U0001F451 \u0930\u093e\u091c\u093e {n}", "\U0001F338 {n} \u091c\u0940",
-    "\U0001F1EE\U0001F1F3 {n} \U0001F1EE\U0001F1F3",
+    "\u091c\u092f {n} \U0001F6A9", "\u0950 {n} \u0950",
+    "\U0001F64F {n} \U0001F64F", "\U0001F451 \u0930\u093e\u091c\u093e {n}",
 ]
-PREFIXES = ["", L, "\u2629", "\u2605", "\u265b", "\u300e", "\u2756", "\u27bb", "\u2726", "\U0001F525", "\U0001F451"]
-SUFFIXES = ["", R, "\U0001F525", "\u2605", "\u265b", "\u300f", "\U0001F33E", "\u2756", "\U0001F497", "\U0001F48E", "\U0001F451"]
-ORNAMENTS = ["", "\u2661", "\u2726", "\u2740", "\u26a1", "\U0001F338", "\U0001F33E", "\u2756", "\U00013209"]
-MARKS = ["", "\u2605", "\u2728", "\U0001F4AB"]
+PREFIXES = ["", L, "\u25c4\u23e4", "\u272f", "\u23af\uabed", "\ua9c1", "\u2765", "\u300e", "\u3010", "\u2756", "\u27bb", "\u265b", "\U0001F451", "\U0001F525"] + list(XPRE)
+SUFFIXES = ["", R, "\u23e4\u25ba", "\u272f", "\u23af\uabed", "\ua9c2", "\u2765", "\u300f", "\u3011", "\U0001F33E", "\U0001F90D", "\U0001F98B", "\U0001FAB7", "\U0001F451"] + list(XSUF)
+ORNAMENTS = ["", "\u2661", "\u2726", "\u2740", "\u26a1", "\U0001F338", "\U0001F33E", "\U0001F98B", "\U0001F90D", "\U0001FAB7"]
+MARKS = ["", "\u2605", "\u2728", "\U0001F4AB", "\u20DD"]
 SEPARATORS = ["", " ", " \u2022 ", " | ", " \u2726 "]
 FONTS = ["bold", "italic", "script", "boldscript", "smallcaps", "mono", "double", "fraktur"]
 
@@ -121,18 +123,28 @@ def catalog(name: str, category: str) -> list[str]:
         f"{L}{bold}{R}",
         f"{L} {strike(bold)} {R}",
         f"{L} {circled(bold)} {R}",
-        f"{L} {script} \U0001F33E {R}",
+        f"\u25c4\u23e4 {bold} \u23e4\u25ba",
+        f"\u272f \u23af\uabed {bold} \u23af\uabed \u272f",
+        f"\ua9c1 {script} \ua9c2",
+        f"\u2765 {script} \u2765",
     ]
     wraps = {"premium": PREMIUM_WRAPS, "aesthetic": AESTHETIC_WRAPS, "live": LIVE_WRAPS, "hindi": HINDI_WRAPS}.get(category, PREMIUM_WRAPS)
     fonts = list(ENGINES)
     for i, wrap in enumerate(wraps):
-        styled = apply_font(raw, fonts[i % len(fonts)])
-        items.append(wrap.replace("{n}", styled))
+        items.append(wrap.replace("{n}", apply_font(raw, fonts[i % len(fonts)])))
+    for wrap in EXTRA_WRAPS:
+        items.append(wrap.replace("{n}", bold))
     if pack_build and category in ("premium", "aesthetic", "live"):
         try:
             items.extend(pack_build(raw))
         except Exception:
             pass
+    try:
+        items.extend(lookalike_fonts(raw))
+    except Exception:
+        pass
+    for pre, suf in zip(PREFIXES[1:8], SUFFIXES[1:8]):
+        items.append(f"{pre} {bold} {suf}")
     for font in fonts:
         items.append(apply_font(raw, font))
     out, seen = [], set()
@@ -152,11 +164,11 @@ def bios(name: str) -> list[str]:
     return [
         f"{L} {n} {R} | aesthetic",
         f"\u2728 {fancy} | dreamer \u2728",
-        f"\U0001F451 VIP \u2022 {bold} \U0001F451",
-        f"\U0001F338 sirf {fancy} \U0001F338",
-        f"\U0001F525 {bold} on fire \U0001F525",
+        f"\U0001F451 VIP \u2022 {bold}",
+        f"\U0001F90D nobody asked but {n} is everything",
+        f"sunsets and self-love | {fancy}",
+        f"\U0001F338 sirf {fancy}",
         f"\U0001F1EE\U0001F1F3 {n} | desi soul",
-        f"\U0001F48E premium {fancy}",
         f"\U0001F3B5 {fancy} x music",
         f"\U0001F9FF {strike(n)} | nazar",
         f"\u27bb {circled(bold)} hustle",
