@@ -3,15 +3,8 @@ import html
 import logging
 import os
 import time
-from uuid import uuid4
 
-from telegram import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InlineQueryResultArticle,
-    InputTextMessageContent,
-    Update,
-)
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ChatType
 from telegram.error import Forbidden, RetryAfter, TelegramError
 from telegram.ext import (
@@ -20,13 +13,12 @@ from telegram.ext import (
     ChatMemberHandler,
     CommandHandler,
     ContextTypes,
-    InlineQueryHandler,
     MessageHandler,
     filters,
 )
 
 import storage
-from styles import CAT_LABELS, CATEGORIES, build_catalog, build_preview
+from styles import CATEGORIES, build_catalog
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -40,7 +32,7 @@ SUPPORT_URL = os.getenv("SUPPORT_URL", "https://t.me/HARRYASHU")
 STYLE_URL = os.getenv("STYLE_URL", "https://t.me/TG_BIO_STYLE")
 PROMO_HOURS = float(os.getenv("PROMO_HOURS", "1"))
 
-BATCH = 8
+BATCH = 10
 COOLDOWN = 2.0
 NAME_LIMIT = 24
 
@@ -52,6 +44,16 @@ EMOJI_IDS = [
     "6197330889765033702",
 ]
 FALLBACKS = ["\U0001F44D", "\u2728", "\U0001F525", "\U0001F48E", "\U0001F451"]
+
+CAT_BTN = {
+    "all": "\U0001F90D All",
+    "cute": "\U0001FA77 Cute",
+    "royal": "\U0001F9E1 Royal",
+    "dark": "\U0001F5A4 Dark",
+    "gaming": "\U0001F49A Gaming",
+    "aesthetic": "\U0001F499 Aesthetic",
+    "nature": "\U0001F49C Nature",
+}
 
 
 def pe(index: int) -> str:
@@ -78,96 +80,104 @@ def start_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("Support", url=SUPPORT_URL),
-                InlineKeyboardButton("Owner", url=OWNER_URL),
+                InlineKeyboardButton("\U0001F496 Support", url=SUPPORT_URL),
+                InlineKeyboardButton("\U0001F451 Owner", url=OWNER_URL),
             ],
-            [InlineKeyboardButton("Bio Style", url=STYLE_URL)],
-            [InlineKeyboardButton("Try inline", switch_inline_query_current_chat="")],
+            [
+                InlineKeyboardButton("\U0001F338 Bio Style", url=STYLE_URL),
+                InlineKeyboardButton("\U0001F525 Channel", url=STYLE_URL),
+            ],
         ]
     )
-
-
-def category_kb(current: str = "all") -> InlineKeyboardMarkup:
-    row = []
-    rows = []
-    for key in CATEGORIES:
-        mark = "\u2022 " if key == current else ""
-        row.append(
-            InlineKeyboardButton(
-                f"{mark}{CAT_LABELS[key]}",
-                callback_data=f"cat|{key}",
-            )
-        )
-        if len(row) == 3:
-            rows.append(row)
-            row = []
-    if row:
-        rows.append(row)
-    return InlineKeyboardMarkup(rows)
 
 
 def page_kb(offset: int, total: int, category: str) -> InlineKeyboardMarkup:
-    buttons = []
     nav = []
     if offset > 0:
-        nav.append(InlineKeyboardButton("\u25c0 Back", callback_data="nav|back"))
+        nav.append(InlineKeyboardButton("\u2B05\uFE0F Back", callback_data="nav|back"))
     if offset + BATCH < total:
-        nav.append(InlineKeyboardButton("CONTINUE \u25b6", callback_data="nav|more"))
+        nav.append(InlineKeyboardButton("\u27A1\uFE0F Next 10", callback_data="nav|more"))
+    rows = []
     if nav:
-        buttons.append(nav)
-    buttons.append(
+        rows.append(nav)
+    rows.append(
         [
-            InlineKeyboardButton("Categories", callback_data="nav|cats"),
-            InlineKeyboardButton("New name", callback_data="nav|new"),
+            InlineKeyboardButton(("\u2705 " if category == "cute" else "") + "\U0001FA77 Cute", callback_data="cat|cute"),
+            InlineKeyboardButton(("\u2705 " if category == "royal" else "") + "\U0001F9E1 Royal", callback_data="cat|royal"),
+            InlineKeyboardButton(("\u2705 " if category == "dark" else "") + "\U0001F5A4 Dark", callback_data="cat|dark"),
         ]
     )
-    return InlineKeyboardMarkup(buttons)
+    rows.append(
+        [
+            InlineKeyboardButton(("\u2705 " if category == "gaming" else "") + "\U0001F49A Game", callback_data="cat|gaming"),
+            InlineKeyboardButton(("\u2705 " if category == "aesthetic" else "") + "\U0001F499 Aesthetic", callback_data="cat|aesthetic"),
+            InlineKeyboardButton(("\u2705 " if category == "nature" else "") + "\U0001F49C Nature", callback_data="cat|nature"),
+        ]
+    )
+    rows.append(
+        [
+            InlineKeyboardButton("\U0001F90D All Styles", callback_data="cat|all"),
+            InlineKeyboardButton("\U0001F504 New Name", callback_data="nav|new"),
+        ]
+    )
+    return InlineKeyboardMarkup(rows)
+
+
+def title_line() -> str:
+    tail = ejoin(0, 0, 0, 0)
+    return (
+        f"{ejoin(0, 1, 2)}\n"
+        f"<b>\U0001F44D HEY I AM PREMIUM NAME MAKER BOT {tail}</b>"
+    )
 
 
 def start_text(who: str, private: bool = True) -> str:
     safe = html.escape(who)
-    crown = ejoin(0, 1, 2)
-    tail = ejoin(0, 0, 0, 0)
     body = (
-        f"{crown}\n"
-        f"<b>\U0001F44D \U0001D407\U0001D404\U0001D418 I AM PREMIUM NAME MAKER BOT {tail}</b>\n\n"
-        f"{pe(3)} Welcome, <b>{safe}</b>\n\n"
-        f"{pe(4)} Fancy Unicode \u00b7 VIP underlines \u00b7 frames\n"
-        f"{pe(1)} Categories + inline search + easy copy\n"
+        f"{title_line()}\n\n"
+        f"{pe(3)} Welcome, <b>{safe}</b>\n"
+        f"{pe(4)} 1000+ Unicode fonts \u00b7 frames \u00b7 VIP lines\n"
+        f"{pe(1)} Copy any style and paste on Telegram name / bio\n"
     )
     if private:
         body += (
-            f"\n{pe(2)} <i>PM me a name</i>\n"
-            f"{pe(0)} or use <code>/style Harry</code>"
+            f"\n{pe(2)} <b>Apna naam bhejo</b>\n"
+            f"{pe(0)} ya <code>/style Harry</code>"
         )
     else:
         body += (
-            f"\n{pe(2)} Group mein sirf command chalti hai:\n"
+            f"\n{pe(2)} Group mein sirf command:\n"
             f"<code>/style naam</code>\n"
-            f"{pe(0)} Seedha naam likhne se reply nahi aayega."
+            f"{pe(0)} Normal message pe reply nahi aayega."
         )
     return body
 
 
 def promo_text() -> str:
-    tail = ejoin(0, 0, 0, 0)
     return (
-        f"{ejoin(0, 1, 2)}\n"
-        f"<b>\U0001F44D \U0001D407\U0001D404\U0001D418 I AM PREMIUM NAME MAKER BOT {tail}</b>\n\n"
+        f"{title_line()}\n\n"
         f"{pe(3)} Stylish name chahiye?\n"
         f"{pe(4)} Group: <code>/style yourname</code>\n"
         f"{pe(1)} Private: seedha naam bhejo\n"
-        f"{pe(2)} Inline: type <code>@bot naam</code>\n\n"
-        f"{pe(0)} Fast \u00b7 Free \u00b7 Premium emoji pack"
+        f"{pe(2)} Cute \u00b7 Royal \u00b7 Dark \u00b7 Gaming packs\n"
+        f"{pe(0)} Fast \u00b7 Free \u00b7 Premium look"
     )
 
 
-def format_page(rows: list[str], offset: int, total: int) -> str:
+def format_page(name: str, rows: list[str], offset: int, total: int) -> str:
     chunk = rows[offset : offset + BATCH]
-    lines = [f"{pe(offset % 5)} <code>{html.escape(item)}</code>" for item in chunk]
-    left = max(total - offset - len(chunk), 0)
-    head = f"{pe(1)} <b>{len(chunk)}</b> styles \u00b7 {left} more \u00b7 {total} total\n"
-    return head + "\n".join(lines)
+    bits = [
+        title_line(),
+        "",
+        f"{pe(1)} Name: <b>{html.escape(name)}</b>",
+        f"{pe(4)} {offset + 1}\u2013{offset + len(chunk)} / {total}",
+        "",
+    ]
+    for i, item in enumerate(chunk, start=offset + 1):
+        bits.append(f"<b>{i}.</b> <code>{html.escape(item)}</code>")
+    bits.append("")
+    bits.append(f"{pe(2)} Tap style \u2192 copy \u2192 Telegram name pe paste")
+    return "\n".join(bits)
 
 
 def too_fast(data: dict) -> bool:
@@ -184,7 +194,7 @@ async def send_page(target, data: dict, edit: bool = False) -> None:
     if not rows:
         await target.reply_text("Koi style nahi bani. Naya naam bhejo.")
         return
-    text = format_page(rows, offset, len(rows))
+    text = format_page(data.get("name", "Ashu"), rows, offset, len(rows))
     markup = page_kb(offset, len(rows), data.get("category", "all"))
     if edit:
         await target.edit_text(text, reply_markup=markup, parse_mode="HTML")
@@ -195,6 +205,10 @@ async def send_page(target, data: dict, edit: bool = False) -> None:
 def rebuild(data: dict) -> None:
     data["rows"] = build_catalog(data["name"], data.get("category", "all"))
     data["offset"] = 0
+
+
+def _clean_name(name: str) -> str:
+    return (name or "").strip()[:NAME_LIMIT] or "Ashu"
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -213,22 +227,20 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text = (
-        f"{pe(0)} <b>Commands</b>\n"
-        f"/start \u2014 intro\n"
-        f"/style naam \u2014 generate\n"
-        f"/font naam \u2014 same as /style\n"
-        f"/random \u2014 random name pack\n\n"
-        f"{pe(1)} <b>PM</b>: seedha naam likho.\n"
-        f"{pe(2)} <b>Group</b>: sirf <code>/style naam</code>.\n"
-        f"{pe(3)} Inline: <code>@bot naam</code>"
+        f"{pe(0)} <b>Kaise use karein</b>\n"
+        f"PM: naam bhejo\n"
+        f"Group: <code>/style Harry</code>\n\n"
+        f"{pe(1)} Buttons se category badlo\n"
+        f"{pe(2)} Next 10 se aur styles\n"
+        f"{pe(3)} Style pe tap karke copy"
     )
-    await update.message.reply_text(text, parse_mode="HTML")
+    await update.message.reply_text(text, parse_mode="HTML", reply_markup=start_kb())
 
 
 async def generate_for(update: Update, context: ContextTypes.DEFAULT_TYPE, name: str) -> None:
     data = session(context)
     if too_fast(data):
-        await update.effective_message.reply_text("Ruko 2 sec, phir try karo.")
+        await update.effective_message.reply_text("2 sec ruko, phir try karo.")
         return
     data["name"] = _clean_name(name)
     rebuild(data)
@@ -238,22 +250,18 @@ async def generate_for(update: Update, context: ContextTypes.DEFAULT_TYPE, name:
         storage.add_group(chat.id)
 
 
-def _clean_name(name: str) -> str:
-    return (name or "").strip()[:NAME_LIMIT] or "Ashu"
-
-
 async def font_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     data = session(context)
     if context.args:
         name = " ".join(context.args)
     else:
-        name = data.get("name", "Ashu")
         if update.effective_chat and update.effective_chat.type != ChatType.PRIVATE:
             await update.message.reply_text(
                 "Group mein aise use karo:\n<code>/style Harry</code>",
                 parse_mode="HTML",
             )
             return
+        name = data.get("name", "Ashu")
     await generate_for(update, context, name)
 
 
@@ -276,7 +284,6 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     await query.answer()
     data = session(context)
     payload = query.data or ""
-
     if payload.startswith("cat|"):
         cat = payload.split("|", 1)[1]
         if cat not in CATEGORIES:
@@ -285,44 +292,19 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         rebuild(data)
         await send_page(query.message, data, edit=True)
         return
-
-    if payload == "nav|cats":
+    if payload == "nav|new":
         await query.message.reply_text(
-            f"{pe(1)} Category choose karo",
-            reply_markup=category_kb(data.get("category", "all")),
+            f"{pe(1)} Naya naam bhejo\nGroup mein <code>/style naam</code>",
             parse_mode="HTML",
         )
         return
-
-    if payload == "nav|new":
-        await query.message.reply_text("Naya naam bhejo (PM) ya /style naam")
-        return
-
     if payload == "nav|more":
         data["offset"] = min(data.get("offset", 0) + BATCH, max(len(data.get("rows", [])) - 1, 0))
         await send_page(query.message, data, edit=True)
         return
-
     if payload == "nav|back":
         data["offset"] = max(data.get("offset", 0) - BATCH, 0)
         await send_page(query.message, data, edit=True)
-
-
-async def on_inline(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    query = update.inline_query
-    name = _clean_name(query.query or "Ashu")
-    rows = build_preview(name, 40)
-    results = []
-    for item in rows[:40]:
-        results.append(
-            InlineQueryResultArticle(
-                id=str(uuid4()),
-                title=item[:60],
-                input_message_content=InputTextMessageContent(item),
-                description=f"Style for {name}",
-            )
-        )
-    await query.answer(results, cache_time=10, is_personal=True)
 
 
 async def on_chat_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -353,12 +335,7 @@ async def hourly_promo(context: ContextTypes.DEFAULT_TYPE) -> None:
     markup = start_kb()
     for chat_id in storage.list_groups():
         try:
-            await context.bot.send_message(
-                chat_id,
-                text,
-                reply_markup=markup,
-                parse_mode="HTML",
-            )
+            await context.bot.send_message(chat_id, text, reply_markup=markup, parse_mode="HTML")
             await asyncio.sleep(0.2)
         except Forbidden:
             storage.remove_group(chat_id)
@@ -382,27 +359,14 @@ def main() -> None:
     app.add_handler(CommandHandler("style", font_cmd))
     app.add_handler(CommandHandler("random", random_cmd))
     app.add_handler(CallbackQueryHandler(on_callback))
-    app.add_handler(InlineQueryHandler(on_inline))
     app.add_handler(ChatMemberHandler(on_chat_member, ChatMemberHandler.MY_CHAT_MEMBER))
-    app.add_handler(
-        MessageHandler(
-            filters.TEXT & ~filters.COMMAND & filters.ChatType.PRIVATE,
-            on_private_name,
-        )
-    )
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & filters.ChatType.PRIVATE, on_private_name))
     app.add_error_handler(on_error)
-
     job_queue = app.job_queue
     if job_queue:
-        job_queue.run_repeating(
-            hourly_promo,
-            interval=max(PROMO_HOURS, 0.25) * 3600,
-            first=60,
-            name="hourly-promo",
-        )
+        job_queue.run_repeating(hourly_promo, interval=max(PROMO_HOURS, 0.25) * 3600, first=60, name="hourly-promo")
     else:
         log.warning("JobQueue missing. Install python-telegram-bot[job-queue]")
-
     log.info("Stylish Name Bot online")
     app.run_polling(drop_pending_updates=True, allowed_updates=Update.ALL_TYPES)
 
