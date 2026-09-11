@@ -21,11 +21,12 @@ CATS = (
 def cat_kb():
     rows = []
     for i, (key, label) in enumerate(CATS):
-        callback = "live|open" if key == "live" else f"cat|{key}"
+        # Keep Live on the same category callback path as the proven flow.
+        # bot.py's category handler then opens the dedicated Live Studio.
         rows.append([
             btn(
                 label,
-                callback_data=callback,
+                callback_data=f"cat|{key}",
                 style="primary" if i % 2 == 0 else "success",
                 icon=EMOJI_IDS[i],
             )
