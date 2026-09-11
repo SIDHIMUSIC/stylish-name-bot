@@ -1,20 +1,12 @@
-"""Colored inline buttons for Bot API 9.4 / PTB 22.7+."""
+"""Central Telegram inline-button factory for Bot API 9.4 / PTB 22.8."""
 from telegram import InlineKeyboardButton
+from emoji_ids import EMOJI_IDS
 
-try:
-    from emoji_ids import EMOJI_IDS
-except ImportError:
-    EMOJI_IDS = [
-        "6057848605601963652",
-        "6124902618574625426",
-        "6124898345082165755",
-        "6125399112499075549",
-        "6197330889765033702",
-    ]
 
 def btn(text, style=None, icon=None, **kwargs):
+    """Create a button with the supported Telegram palette and custom emoji icon."""
     kw = dict(kwargs)
-    if style:
+    if style in {"primary", "success", "danger"}:
         kw["style"] = style
     if icon:
         kw["icon_custom_emoji_id"] = str(icon)
@@ -25,11 +17,14 @@ def btn(text, style=None, icon=None, **kwargs):
         kw.pop("icon_custom_emoji_id", None)
         return InlineKeyboardButton(text, **kw)
 
+
 def blue(text, **kwargs):
     return btn(text, style="primary", icon=kwargs.pop("icon", EMOJI_IDS[4 % len(EMOJI_IDS)]), **kwargs)
 
+
 def green(text, **kwargs):
     return btn(text, style="success", icon=kwargs.pop("icon", EMOJI_IDS[1 % len(EMOJI_IDS)]), **kwargs)
+
 
 def red(text, **kwargs):
     return btn(text, style="danger", icon=kwargs.pop("icon", EMOJI_IDS[2 % len(EMOJI_IDS)]), **kwargs)
