@@ -1,4 +1,4 @@
-"""Local premium wraps + channel-style frames for the editor."""
+"""Local premium wraps + NAME_BOTGEN formats for the editor."""
 from __future__ import annotations
 
 try:
@@ -39,6 +39,12 @@ try:
 except ImportError:
     EXTRA_WRAPS, XPRE, XSUF = [], [], []
     def lookalike_fonts(name):
+        return []
+
+try:
+    from name_formats import apply_formats
+except ImportError:
+    def apply_formats(name):
         return []
 
 MEITEI = "\uA9BF"
@@ -117,16 +123,13 @@ def catalog(name: str, category: str) -> list[str]:
     raw = (name or "Name").strip()[:24] or "Name"
     bold = apply_font(raw, "bold")
     script = apply_font(raw, "script")
-    items = [
+    items = list(apply_formats(raw))
+    items += [
         f"{L} {raw} {R}",
         f"{L} {bold} {R}",
         f"{L}{bold}{R}",
         f"{L} {strike(bold)} {R}",
         f"{L} {circled(bold)} {R}",
-        f"\u25c4\u23e4 {bold} \u23e4\u25ba",
-        f"\u272f \u23af\uabed {bold} \u23af\uabed \u272f",
-        f"\ua9c1 {script} \ua9c2",
-        f"\u2765 {script} \u2765",
     ]
     wraps = {"premium": PREMIUM_WRAPS, "aesthetic": AESTHETIC_WRAPS, "live": LIVE_WRAPS, "hindi": HINDI_WRAPS}.get(category, PREMIUM_WRAPS)
     fonts = list(ENGINES)
